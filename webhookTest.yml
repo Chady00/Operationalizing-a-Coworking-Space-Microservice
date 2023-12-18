@@ -1,0 +1,2 @@
+# This is a event triggering test for codebuild.
+# When this filled is pushed to this github account, Codebuild will automatically start the building process.
