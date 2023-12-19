@@ -1,4 +1,0 @@
-apscheduler
-flask==3.0.0
-psycopg2-binary
-flask_sqlalchemy
