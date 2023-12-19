@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from flask import jsonify, request
 from sqlalchemy import and_, text
 from random import randint
+from models import Token
 
 from config import app, db
 
@@ -50,7 +51,8 @@ def get_daily_visits():
 
 @app.route("/api/reports/daily_usage", methods=["GET"])
 def daily_visits():
-    return jsonify(get_daily_visits)
+    response = get_daily_visits()
+    return jsonify(response)
 
 
 @app.route("/api/reports/user_visits", methods=["GET"])
@@ -66,19 +68,18 @@ def all_user_visits():
         LEFT JOIN users
                 ON t.user_id = users.id;
     """))
-
     response = {}
     for row in result:
         response[row[0]] = {
             "visits": row[1],
             "joined_at": str(row[2])
         }
-    
+
     return jsonify(response)
 
 
 scheduler = BackgroundScheduler()
-job = scheduler.add_job(get_daily_visits, 'interval', seconds=30)
+job = scheduler.add_job(get_daily_visits, 'interval', seconds=3)
 scheduler.start()
 
 if __name__ == "__main__":
