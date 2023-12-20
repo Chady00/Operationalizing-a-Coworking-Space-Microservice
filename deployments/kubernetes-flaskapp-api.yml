@@ -50,10 +50,7 @@ spec:
                   name: db-env
                   key: DB_USERNAME
             - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: DB_PASSWORD
+              value: rJ6lPsG58r  # Directly assign the password value
             - name: DB_HOST
               value: my-pos-postgresql
       restartPolicy: Always
