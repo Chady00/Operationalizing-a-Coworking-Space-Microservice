@@ -1,6 +1,6 @@
-## **Deployment Documentation Summary: Building and Deploying a Flask Application with Kubernetes, CodeBuild, and PostgreSQL**
+# **Deployment Documentation Summary: Building and Deploying a Flask Application with Kubernetes, CodeBuild, and PostgreSQL**
 
-# **Exclusively composed by Chady Achraf (Chady00), this README bears the sole authorship of Chady himself. Only Chady00 contributed to the project developement steps**
+Exclusively composed by Chady Achraf (Chady00), this README bears the sole authorship of Chady himself. Only Chady00 contributed to the project developement steps
 
 
 In this deployment process, we leverage a robust set of tools and technologies to streamline the development, build, and deployment of a Flask application along with a PostgreSQL database within a Kubernetes cluster.  
