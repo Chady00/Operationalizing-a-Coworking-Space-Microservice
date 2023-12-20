@@ -1,6 +1,6 @@
 # **Deployment Documentation Summary: Building and Deploying a Flask Application with Kubernetes, CodeBuild, and PostgreSQL**
 
-        Exclusively composed by Chady Achraf (Chady00), this README bears the sole authorship of Chady himself. Only Chady00 contributed to the project developement steps.
+<sup>Exclusively composed by Chady Achraf (Chady00), this README bears the sole authorship of Chady himself. Only Chady00 contributed to the project development steps.</sup>
 
 
 In this deployment process, we leverage a robust set of tools and technologies to streamline the development, build, and deployment of a Flask application along with a PostgreSQL database within a Kubernetes cluster.  
@@ -80,9 +80,6 @@ In this deployment process, we leverage a robust set of tools and technologies t
     
 
 <table><tbody><tr><td><code>docker run -e DB_USERNAME=postgres -e DB_PASSWORD=rJ6lPsG58r --network=host myimage</code></td></tr></tbody></table>
-
-
-![2  running docker image locally](https://github.com/Chady00/Operationalizing-a-Coworking-Space-Microservice/assets/84717550/65f44ee5-a6cb-4efb-afc3-da14dc482719)
 
 
 ## **4\. AWS CodeBuild Pipeline**
