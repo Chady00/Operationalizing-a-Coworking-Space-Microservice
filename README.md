@@ -1,6 +1,8 @@
 ## **Deployment Documentation Summary: Building and Deploying a Flask Application with Kubernetes, CodeBuild, and PostgreSQL**
-In this deployment process, we leverage a robust set of tools and technologies to streamline the development, build, and deployment of a Flask application along with a PostgreSQL database within a Kubernetes cluster.
+
+In this deployment process, we leverage a robust set of tools and technologies to streamline the development, build, and deployment of a Flask application along with a PostgreSQL database within a Kubernetes cluster.  
 **Tools and Technologies:**
+
 1.  **Flask Application:** A lightweight and versatile web framework for Python.
 2.  **Docker:** Containerization tool used to package the Flask application, ensuring consistency across different environments.
 3.  **GitHub:** Version control platform to host and manage the application's source code.
@@ -11,7 +13,6 @@ In this deployment process, we leverage a robust set of tools and technologies t
 8.  **Helm:** Kubernetes package manager for simplifying and automating the deployment of applications.
 9.  **CloudWatch:** Setting up cloudwatch daemon and container insights to monitor the flask app logs and ensure correctness.
 
-
 ## **Project Development Steps**
 
 ## **1\. Database Setup and Connection**
@@ -21,25 +22,49 @@ In this deployment process, we leverage a robust set of tools and technologies t
 *   Use **kubectl port-forward** to forward PostgreSQL service port (5432) to local machine.
 *   Connect to the database using **psql** with forwarded port.
 
+<table><tbody><tr><td><code>kubectl port-forward --namespace default svc/my-pos-postgresql 5432:5432 &amp;</code><br><code>PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432 &lt; db/1_create_tables.sql</code></td></tr></tbody></table>
+
 ### **Connecting Via a Pod (Option 2)**
 
 *   Use **kubectl exec** to enter a pod with access to PostgreSQL service.
 *   Connect to the database using **psql** with service name and port.
 
+<table><tbody><tr><td><code>kubectl exec -it my-pos-postgresql-0 -- bash</code><br><code>PGPASSWORD="$POSTGRES_PASSWORD" psql postgres://postgres@my-pos-postgresql:5432/postgres</code></td></tr></tbody></table>
+
 ### **Seed Database**
 
 *   Run SQL seed files located in the **db/** directory to create tables and populate them with data.
 
+<table><tbody><tr><td><code>kubectl port-forward --namespace default svc/my-pos-postgresql 5432:5432 &amp;</code><br><code>PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432 &lt; db/2_seed_users.sql</code></td></tr></tbody></table>
+
 ## **2\. Local Testing of Analytics Application**
 
 *   Navigate to the **analytics/** directory.
-*   Install dependencies using **pip install -r requirements.txt**.
-*   Run the application locally:
+*   Install requirements for the analytics application.  
+    
+
+<table><tbody><tr><td><code>python -m pip install --upgrade pip</code><br><code>pip install -r analytics/requirements.txt</code></td></tr></tbody></table>
+
+*   Run the analytics application locally:
+
+<table><tbody><tr><td><code>DB_USERNAME=postgres DB_PASSWORD=rJ6lPsG58r python analytics/app.py</code></td></tr></tbody></table>
+
 *   Test the application using curl commands.
+
+<table><tbody><tr><td><code>curl http://127.0.0.1:5153/api/reports/daily_usage</code><br><code>curl http://127.0.0.1:5153/api/reports/user_visits</code></td></tr></tbody></table>
 
 ## **3\. Docker Image Creation and Local Deployment**
 
 *   Build the Docker image locally:
+
+<table><tbody><tr><td><code>docker build -t myimage .</code></td></tr></tbody></table>
+
+*   Run the Docker container locally.  
+    
+
+<table><tbody><tr><td><code>docker run -e DB_USERNAME=postgres -e DB_PASSWORD=rJ6lPsG58r --network=host myimage</code></td></tr></tbody></table>
+
+  
 
 ## **4\. AWS CodeBuild Pipeline**
 
@@ -55,6 +80,8 @@ In this deployment process, we leverage a robust set of tools and technologies t
 *   Set up CloudWatch agent for monitoring.
 *   Use the provided script with appropriate substitutions for **ClusterName**, **RegionName**, **FluentBitHttpPort**, etc.
 
+<table><tbody><tr><td><code>ClusterName=flask-cluster</code><br><code>RegionName=us-east-1</code><br><code>FluentBitHttpPort='2020'</code><br><code>FluentBitReadFromHead='Off'</code><br><code>[[ ${FluentBitReadFromHead} = 'On' ]] &amp;&amp; FluentBitReadFromTail='Off'|| FluentBitReadFromTail='On'</code><br><code>[[ -z ${FluentBitHttpPort} ]] &amp;&amp; FluentBitHttpServer='Off' || FluentBitHttpServer='On'</code><br><code>curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluent-bit-quickstart.yaml | sed 's/{{cluster_name}}/'${ClusterName}'/;s/{{region_name}}/'${RegionName}'/;s/{{http_server_toggle}}/"'${FluentBitHttpServer}'"/;s/{{http_server_port}}/"'${FluentBitHttpPort}'"/;s/{{read_from_head}}/"'${FluentBitReadFromHead}'"/;s/{{read_from_tail}}/"'${FluentBitReadFromTail}'"/' | kubectl apply -f -</code></td></tr></tbody></table>
+
 ## **Important Notes**
 
 *   Ensure PostgreSQL password is encoded in Base64 for use in Kubernetes secrets.
@@ -64,29 +91,17 @@ In this deployment process, we leverage a robust set of tools and technologies t
 *   Ensure that dependencies are installed, and required seed files are available.
 *   Pay attention to security considerations, such as password handling and network configurations.
 
-bashCopy code
-
 `docker build -t myimage . docker run -e DB_USERNAME=postgres -e DB_PASSWORD=rJ6lPsG58r --network=host myimage`
-
-bashCopy code
 
 `DB_USERNAME=postgres DB_PASSWORD=rJ6lPsG58r python analytics/app.py`
 
-bashCopy code
-
 `kubectl port-forward --namespace default svc/my-pos-postgresql 5432:5432 & PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432 < db/2_seed_users.sql`
-
-bashCopy code
 
 `kubectl exec -it my-pos-postgresql-0 -- bash PGPASSWORD="$POSTGRES_PASSWORD" psql postgres://postgres@my-pos-postgresql:5432/postgres`
 
-bashCopy code
-
 `kubectl port-forward --namespace default svc/my-pos-postgresql 5432:5432 & PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432 < db/1_create_tables.sql`
 
-
-
-**Deployment Process Overview:**
+**Deployment Process Overview:**  
 **Local Testing:** Developers locally test the Flask application with a PostgreSQL database to ensure its functionality using curl commands.
 
 **Docker Image Creation:** A Docker image is created locally using the Docker build command, ensuring the application's dependencies are encapsulated.
@@ -99,12 +114,12 @@ bashCopy code
 
 **Release Process:** To release new builds, developers update the code in the GitHub repository. CodeBuild automates the build process, ensuring that the latest Docker image is pushed to ECR. Kubernetes then deploys the updated application using the specified configuration files.
 
-**Continuous Monitoring:** AWS CloudWatch logs provide insight into application behavior, aiding in monitoring and troubleshooting.
+**Continuous Monitoring:** AWS CloudWatch logs provide insight into application behavior, aiding in monitoring and troubleshooting.  
 This deployment approach enhances collaboration, ensures consistency in different environments, and facilitates a seamless release process. Developers can focus on writing code, knowing that the CI/CD pipeline automates the build, test, and deployment stages, resulting in a reliable and scalable application in a Kubernetes environment.
 
-**Resources:**
+**Resources:**  
 **Reasonable Memory and CPU allocation in the Kubernetes deployment configuration :** 2 vCPUs, 2.0 GiB of memory with 5 Gibps of bandwidth.
 
- **A reasonable AWS instance would be:** t4g.small ARM AMI which is enough to complete the entire workflow.
- 
+**A reasonable AWS instance would be:** t4g.small ARM AMI which is enough to complete the entire workflow.
+
 **To reduce costs**: autoscaling could be applied, as well as using efficient instance types.
