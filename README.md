@@ -17,7 +17,7 @@ In this deployment process, we leverage a robust set of tools and technologies t
 9.  **CloudWatch:** Setting up cloudwatch daemon and container insights to monitor the flask app logs and ensure correctness.
 
 ## **Project Development Steps**
-<sup>Please Note that these steps are only preliminary steps to provide overall insights about this project flow. For more elaborate details, feel free to contact me.</sup>
+<sup>Please Note that these steps are only preliminary steps to provide overall insights about this project flow. For more elaborate details, feel free to [contact me](https://github.com/Chady00).</sup>
 
 ## **1\. Database Setup and Connection**
 
