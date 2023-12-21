@@ -8,7 +8,7 @@ In this deployment process, we leverage a robust set of tools and technologies t
 
 1.  **Flask Application:** A lightweight and versatile web framework for Python.
 2.  **Docker:** Containerization tool used to package the Flask application, ensuring consistency across different environments.
-3.  **GitHub:** Version control platform to host and manage the application's source code.
+3.  **Git and Github:** Version control platform to host and manage the application's source code.
 4.  **AWS CodeBuild:** Continuous integration service automating the build process by fetching the application code from GitHub, building a Docker image, and pushing it to Amazon Elastic Container Registry (ECR).
 5.  **Amazon ECR:** Container registry for storing and managing Docker images securely.
 6.  **Kubernetes:** Container orchestration platform facilitating the deployment, scaling, and management of containerized applications.
